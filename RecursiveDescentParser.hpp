@@ -1,6 +1,8 @@
 /**
  * @file RecursiveDescentParser.hpp
- * @brief Defines the RecursiveDescentParser class
+ * @brief Defines the RecursiveDescentParser class that takes in vector of 
+ *        tokens and creates a Left Child Right Sibling (LCRS) binary tree
+ *        that represents the Concrete Syntax Tree (CST) 
  * @authors Jacob Franco, Zach Gassner, Haley Joerger, Adam Lyday 
  */
 
@@ -15,8 +17,67 @@
 using namespace std;
 
 /**
+ * @enum State
+ * @brief Enumerates the different states of the DFA 
+ */
+enum State {
+    OTHER,
+    FUNCTION_DECLARATION,
+    VARIABLE_DECLARATION,
+    VARIABLE_ASSIGNMENT,
+    LOOP,
+    CONDITIONAL
+};
+
+/**
+ * @class LCRS
+ * @brief Represents a LCRS binary tree 
+ */
+class LCRS {
+public:
+    /**
+     * @brief Constructor
+     * @param token - A token from the input vector of tokens 
+     */
+    LCRS(const Token& token) : token(token), leftChild(nullptr), rightSibling(nullptr) { }
+
+    /**
+     * @brief Breadth-first search print function
+     */
+    void printBFS() const;
+
+private:
+    /**
+     * @brief The data for a LCRS node 
+     */
+    Token token;
+
+    /**
+     * @brief The LCRS node's LC
+     */
+    LCRS* leftChild;
+
+    /**
+     * @brief The LCRS node's RS 
+     */
+    LCRS* rightSibling;
+
+    /**
+     * @brief Returns the DFA state 
+     * @param token - The token to get the DFA state for
+     */
+    State getStateDFA(Token token);
+
+    /**
+     * @brief So RecursiveDescentParser can access LCRS private variables 
+     */
+    friend class RecursiveDescentParser;
+};
+
+
+/**
  * @class RecursiveDescentParser
- * @brief 
+ * @brief Creates a CST using Recursive Descent Parsing
  */
 class RecursiveDescentParser {
 public:
@@ -27,7 +88,10 @@ public:
     RecursiveDescentParser(const vector<Token>& tokens);
 
 private:
-
+    /**
+     * @brief The CST 
+     */
+    LCRS* concreteSyntaxTree;
 };
 
 #endif

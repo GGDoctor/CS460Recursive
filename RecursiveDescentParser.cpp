@@ -5,6 +5,15 @@
  */
 
 #include "RecursiveDescentParser.hpp"
+#include <queue>
+
+/**
+ * @param token - A token object
+ * @returns The actual character(s) of the token
+ */
+auto toTokenCharacter(Token token) {
+    return token.character;
+}
 
 /**
  * @brief Returns string version of token type
@@ -110,11 +119,168 @@ auto toTokenType(Token token) {
 }
 
 /**
+ * @brief Breadth-first search print function
+ */
+void LCRS::printBFS() const {
+    /**
+     * @remark pair a LCRS node and its level in the tree 
+     */
+    queue<std::pair<const LCRS*, int>> q;
+    q.push({this, 0});
+
+    int currentLevel = -1;
+
+    while (!q.empty()) {
+        const LCRS* current = q.front().first;
+        int level = q.front().second;
+        q.pop();
+
+        if (level != currentLevel) {
+            if (currentLevel != -1) 
+                cout << '\n';
+            
+            currentLevel = level;
+        }
+
+        cout << toTokenCharacter(current->token) << ' ';
+
+        if (current->leftChild)
+            q.push({current->leftChild, level + 1});
+        if (current->rightSibling)
+            q.push({current->rightSibling, level});
+
+    }
+
+    cout << '\n';
+}
+
+/**
+ * @brief Returns the DFA state 
+ * @param token - The token to get the DFA state for
+ */
+State getStateDFA(Token token) {
+    if (token.type == IDENTIFIER) {
+        if (token.character == "function" || token.character == "procedure") 
+            return FUNCTION_DECLARATION;
+        
+        if (token.character == "int" || token.character == "string" ||
+            token.character == "char" || token.character == "bool")
+            return VARIABLE_DECLARATION;
+
+        if (token.character == "if")
+            return CONDITIONAL;
+
+        if (token.character == "for" || token.character == "while")
+            return LOOP;
+
+        if (token.character == "=")
+            return VARIABLE_ASSIGNMENT;
+    }
+        
+    return OTHER;
+}
+
+/**
  * @brief Constructor
  * @param tokens - A vector of tokens from a C-style program 
  */
 RecursiveDescentParser::RecursiveDescentParser(const vector<Token>& tokens) {
-    for (const auto& token : tokens) {
-        cout << toTokenType(token) << ": " << token.character << '\n';
+   /**
+    * used to keep track of left parenthesis in the cases of math/bool expression 
+    */
+   int leftParenCounter = 0;
+
+    LCRS* lcrs = tokens.size() > 0 ? new LCRS(tokens[0]) : nullptr;
+    LCRS* temp = lcrs;
+    State state = getStateDFA(tokens[0]);
+
+    for (int i = 1; i < tokens.size(); i++) {
+        switch (state) {
+            case OTHER:
+                if (tokens[i - 1].type == SEMICOLON || 
+                    tokens[i - 1].type == RIGHT_BRACE ||
+                    tokens[i - 1].type == LEFT_BRACE ||
+                    tokens[i - 1].character == "else") {
+                    temp->leftChild = new LCRS(tokens[i]);
+                    temp = temp->leftChild;
+                    state = getStateDFA(tokens[i]);
+                } else {
+                    temp->rightSibling = new LCRS(tokens[i]);
+                    temp = temp->rightSibling;
+                }
+                break;
+
+            case FUNCTION_DECLARATION:
+                if (tokens[i - 1].type == RIGHT_PARENTHESIS) {
+                    temp->leftChild = new LCRS(tokens[i]);
+                    temp = temp->leftChild;
+                    state = getStateDFA(tokens[i]);
+                } else {
+                    temp->rightSibling = new LCRS(tokens[i]);
+                    temp = temp->rightSibling;
+                }
+                break;
+
+            case VARIABLE_DECLARATION:
+                if (tokens[i - 1].type == SEMICOLON) {
+                    temp->leftChild = new LCRS(tokens[i]);
+                    temp = temp->leftChild;
+                    state = getStateDFA(tokens[i]);
+                } else {
+                    temp->rightSibling = new LCRS(tokens[i]);
+                    temp = temp->rightSibling;
+                }
+                break;
+
+            case VARIABLE_ASSIGNMENT:
+                if (tokens[i - 1].type == SEMICOLON) {
+                    temp->leftChild = new LCRS(tokens[i]);
+                    temp = temp->leftChild;
+                    state = getStateDFA(tokens[i]);
+                } else {
+                    temp->rightSibling = new LCRS(tokens[i]);
+                    temp = temp->rightSibling;
+                }
+                break;
+
+            case LOOP:
+                if (tokens[i - 1].type == RIGHT_PARENTHESIS && leftParenCounter == 0) {
+                    temp->leftChild = new LCRS(tokens[i]);
+                    temp = temp->leftChild;
+                    state = getStateDFA(tokens[i]);
+                } else {
+                    if (tokens[i].type == RIGHT_PARENTHESIS) 
+                        leftParenCounter--;
+
+                    if (tokens[i].type == LEFT_PARENTHESIS) 
+                        leftParenCounter++;
+            
+                    temp->rightSibling = new LCRS(tokens[i]);
+                    temp = temp->rightSibling;
+                }
+                break;
+
+            case CONDITIONAL:
+                if (tokens[i - 1].type == RIGHT_PARENTHESIS && leftParenCounter == 0) {
+                    temp->leftChild = new LCRS(tokens[i]);
+                    temp = temp->leftChild;
+                    state = getStateDFA(tokens[i]);
+                } else {
+                    if (tokens[i].type == RIGHT_PARENTHESIS) 
+                        leftParenCounter--;
+
+                    if (tokens[i].type == LEFT_PARENTHESIS) 
+                        leftParenCounter++;
+            
+                    temp->rightSibling = new LCRS(tokens[i]);
+                    temp = temp->rightSibling;
+                }
+                break;
+
+
+        }
     }
+
+    concreteSyntaxTree = lcrs;
+    concreteSyntaxTree->printBFS();
 }

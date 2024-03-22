@@ -34,7 +34,7 @@ Tokenization::Tokenization(const string& input) {
         char nextChar = i + 1 < input.size() ? input[i + 1] : 0; 
         Token inputToken;
 
-        switch(input[i]){
+        switch(input[i]) {
             case ' ':
                 break;
 
