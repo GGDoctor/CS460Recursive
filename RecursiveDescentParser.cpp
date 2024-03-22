@@ -114,6 +114,7 @@ auto toTokenType(Token token) {
  * @param tokens - A vector of tokens from a C-style program 
  */
 RecursiveDescentParser::RecursiveDescentParser(const vector<Token>& tokens) {
+    
     for (const auto& token : tokens) {
         cout << toTokenType(token) << ": " << token.character << '\n';
     }

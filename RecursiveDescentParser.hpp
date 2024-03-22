@@ -9,6 +9,7 @@
 
 #include "IgnoreComments.hpp"
 #include "Tokenization.hpp"
+#include "LCRSBinaryTree.cpp"
 #include <iostream>
 #include <vector>
 
