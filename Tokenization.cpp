@@ -255,7 +255,18 @@ Tokenization::Tokenization(const string& input) {
                 i--;
                 tokens.push_back(inputToken);
 
+<<<<<<< Updated upstream
                 break;
+=======
+                inputToken.type = IDENTIFIER;
+            }
+
+            i--;
+            tokens.push_back(inputToken);
+
+
+            break;
+>>>>>>> Stashed changes
         }
     }
 }
