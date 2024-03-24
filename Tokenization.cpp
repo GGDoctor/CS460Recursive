@@ -288,6 +288,15 @@ ostream& operator << (ostream& os, const Tokenization& obj) {
         string tokenString = "Token: ";
 
         switch (token.type) {
+            case VOID:
+                tokenType += "VOID";
+                break;
+
+            case CHAR: 
+                tokenType += "CHAR";
+                break;
+
+            
             case IDENTIFIER:
                 tokenType += "IDENTIFIER";
                 break;

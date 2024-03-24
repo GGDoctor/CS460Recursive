@@ -23,6 +23,8 @@ using namespace std;
  * @brief Enumerates the different token types 
  */
 enum TokenType {
+    CHAR,
+    VOID,
     IDENTIFIER,
     INTEGER,
     STRING,
