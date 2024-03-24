@@ -266,10 +266,6 @@ Tokenization::Tokenization(const string& input) {
             i--;
             tokens.push_back(inputToken);
 
-            // Check if the identifier is a reserved keyword "char"
-            if (inputToken.type == IDENTIFIER && inputToken.character == "char") {
-                cout << "Syntax error on line " << lineNumber << ": reserved word \"char\" cannot be used for the name of a variable." << endl;
-            }
 
             break;
         }
