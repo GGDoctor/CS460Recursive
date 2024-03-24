@@ -17,9 +17,29 @@ Tokenization::Tokenization(const string& input) {
     bool inComment = false;
     bool inString = false;
     int lineNumber = 1;
+    string lastSignificantToken = "";
+
+ string currentToken;
+        Token inputToken;
 
     for (size_t i = 0; i < input.size(); ++i) {
+ 
 
+    // Assuming inputToken is correctly defined and populated by this point in your logic
+    
+    // Update currentToken with the new token value
+    currentToken = inputToken.character;
+
+    // Check for consecutive "char" tokens
+    if (currentToken == "char" && lastSignificantToken == "char") {
+        std::cerr << "Syntax error on line " << lineNumber << ": 'char' cannot be used as the name of a variable.\n";
+    }
+
+    // Reset lastSignificantToken for the next iteration
+    lastSignificantToken = currentToken;
+
+    // Your switch-case statements and other logic continue here...
+}
         if (inString) {
             Token stringToken;
             stringToken.type = STRING;
@@ -32,7 +52,7 @@ Tokenization::Tokenization(const string& input) {
         }
 
         char nextChar = i + 1 < input.size() ? input[i + 1] : 0; 
-        Token inputToken;
+        //Token inputToken;
 
         switch(input[i]) {
             case ' ':
