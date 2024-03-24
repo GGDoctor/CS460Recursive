@@ -57,6 +57,13 @@ Tokenization::Tokenization(const string& input) {
             case '[':
                 inputToken.type = LEFT_BRACKET;
                 inputToken.character = "[";
+
+                // Check if the next character is a '-' to indicate a negative array size
+                if (input[i + 1] == '-') {
+                    std::cerr << "Syntax error on line " << lineNumber << ": array declaration size must be a positive integer.\n";
+                    exit(EXIT_FAILURE); // Or handle the error as needed
+                }
+
                 tokens.push_back(inputToken);
                 break;
 
