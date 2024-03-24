@@ -164,7 +164,7 @@ State getStateDFA(Token token) {
             return FUNCTION_DECLARATION;
         
         if (token.character == "int" || token.character == "string" ||
-            token.character == "char" || token.character == "bool" || token.character == "void")
+            token.character == "char" || token.character == "bool")
             return VARIABLE_DECLARATION;
 
         if (token.character == "if")

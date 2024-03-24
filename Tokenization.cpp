@@ -265,10 +265,10 @@ Tokenization::Tokenization(const string& input) {
 
             i--;
             tokens.push_back(inputToken);
+
             // Check if the identifier is a reserved keyword "char"
             if (inputToken.type == IDENTIFIER && inputToken.character == "char") {
-                std::cerr << "Syntax error on line " << lineNumber << ": reserved word \"" << inputToken.character << "\" cannot be used for the name of a variable." << endl;
-                exit(EXIT_FAILURE);
+                cout << "Syntax error on line " << lineNumber << ": reserved word \"char\" cannot be used for the name of a variable." << endl;
             }
 
             break;
@@ -294,7 +294,6 @@ ostream& operator << (ostream& os, const Tokenization& obj) {
         string tokenString = "Token: ";
 
         switch (token.type) {
-
             case VOID:
                 tokenType += "VOID";
                 break;
