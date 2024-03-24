@@ -241,35 +241,41 @@ Tokenization::Tokenization(const string& input) {
 
                 break;
 
-            default:
-                if (isdigit(input[i])) {
-                    while (!isspace(input[i]) && !(find( listOfSymbols.begin(), 
-                       listOfSymbols.end(), input[i]) != listOfSymbols.end())) {
-                        if (!isdigit(input[i])) {
-                            cout << "Syntax error on line " << lineNumber << ": invalid integer\n";
-                            exit(0);
-                        }
-
-                        inputToken.character += input[i++];
+        default:
+            if (isdigit(input[i])) {
+                while (!isspace(input[i]) && !(find( listOfSymbols.begin(), 
+                listOfSymbols.end(), input[i]) != listOfSymbols.end())) {
+                    if (!isdigit(input[i])) {
+                        cout << "Syntax error on line " << lineNumber << ": invalid integer\n";
+                        exit(0);
                     }
 
-                    inputToken.type = INTEGER;             
-                } else {
-                    while (!isspace(input[i]) && !(find( listOfSymbols.begin(), 
-                       listOfSymbols.end(), input[i]) != listOfSymbols.end())) {
-                        inputToken.character += input[i++];
-                    }
-
-                    inputToken.type = IDENTIFIER;
+                    inputToken.character += input[i++];
                 }
 
-                i--;
-                tokens.push_back(inputToken);
+                inputToken.type = INTEGER;             
+            } else {
+                while (!isspace(input[i]) && !(find( listOfSymbols.begin(), 
+                listOfSymbols.end(), input[i]) != listOfSymbols.end())) {
+                    inputToken.character += input[i++];
+                }
 
-                break;
+                inputToken.type = IDENTIFIER;
+            }
+
+            i--;
+            tokens.push_back(inputToken);
+
+            // Check if the identifier is a reserved keyword "char"
+            if (inputToken.type == IDENTIFIER && inputToken.character == "char") {
+                cout << "Syntax error on line " << lineNumber << ": reserved word \"char\" cannot be used for the name of a variable." << endl;
+            }
+
+            break;
         }
     }
 }
+    
 
 /**
  * @brief Output operator overload
@@ -296,7 +302,6 @@ ostream& operator << (ostream& os, const Tokenization& obj) {
                 tokenType += "CHAR";
                 break;
 
-            
             case IDENTIFIER:
                 tokenType += "IDENTIFIER";
                 break;
