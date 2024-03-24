@@ -317,6 +317,8 @@ ostream& operator << (ostream& os, const Tokenization& obj) {
                 tokenType += "RIGHT_PARENTHESIS";
                 break;
 
+
+
             case LEFT_BRACKET:
                 tokenType += "LEFT_BRACKET";
                 break;
