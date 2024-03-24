@@ -88,6 +88,10 @@ Tokenization::Tokenization(const string& input) {
             case '"':
                 inputToken.type = DOUBLE_QUOTE;
                 inputToken.character = "\"";
+                if(input[i+1]=='\n' || input[i-1] == '\\'){
+                    std::cerr << "Syntax at line " << lineNumber << ": unterminated string quote." << endl;
+                    exit(EXIT_FAILURE);
+                }
                 tokens.push_back(inputToken);
                 inString = !inString;
                 break;
