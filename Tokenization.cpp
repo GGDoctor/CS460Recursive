@@ -57,6 +57,13 @@ Tokenization::Tokenization(const string& input) {
             case '[':
                 inputToken.type = LEFT_BRACKET;
                 inputToken.character = "[";
+
+                // Check if the next character is a '-' to indicate a negative array size
+                if (input[i + 1] == '-') {
+                    std::cerr << "Syntax error on line " << lineNumber << ": array declaration size must be a positive integer.\n";
+                    exit(EXIT_FAILURE); // Or handle the error as needed
+                }
+
                 tokens.push_back(inputToken);
                 break;
 
@@ -81,6 +88,10 @@ Tokenization::Tokenization(const string& input) {
             case '"':
                 inputToken.type = DOUBLE_QUOTE;
                 inputToken.character = "\"";
+                if(input[i+1]=='\n' || input[i-1] == '\\'){
+                    std::cerr << "Syntax error on line " << lineNumber << ": unterminated string quote." << endl;
+                    exit(EXIT_FAILURE);
+                }
                 tokens.push_back(inputToken);
                 inString = !inString;
                 break;
@@ -230,34 +241,65 @@ Tokenization::Tokenization(const string& input) {
 
                 break;
 
-            default:
-                if (isdigit(input[i])) {
-                    while (!isspace(input[i]) && !(find( listOfSymbols.begin(), 
-                       listOfSymbols.end(), input[i]) != listOfSymbols.end())) {
-                        if (!isdigit(input[i])) {
-                            cout << "Syntax error on line " << lineNumber << ": invalid integer\n";
-                            exit(0);
-                        }
-
-                        inputToken.character += input[i++];
+        default:
+            if (isdigit(input[i])) {
+                while (!isspace(input[i]) && !(find( listOfSymbols.begin(), 
+                listOfSymbols.end(), input[i]) != listOfSymbols.end())) {
+                    if (!isdigit(input[i])) {
+                        cout << "Syntax error on line " << lineNumber << ": invalid integer\n";
+                        exit(0);
                     }
 
-                    inputToken.type = INTEGER;             
-                } else {
-                    while (!isspace(input[i]) && !(find( listOfSymbols.begin(), 
-                       listOfSymbols.end(), input[i]) != listOfSymbols.end())) {
-                        inputToken.character += input[i++];
-                    }
-
-                    inputToken.type = IDENTIFIER;
+                    inputToken.character += input[i++];
                 }
 
-                i--;
-                tokens.push_back(inputToken);
+                inputToken.type = INTEGER;             
+            } else {
+                while (!isspace(input[i]) && !(find( listOfSymbols.begin(), 
+                listOfSymbols.end(), input[i]) != listOfSymbols.end())) {
+                    inputToken.character += input[i++];
+                }
 
-<<<<<<< Updated upstream
-                break;
-=======
+                if (inputToken.character == "int" || 
+                    inputToken.character == "char" ||
+                    inputToken.character == "bool" ||
+                    inputToken.character == "string") {
+                    
+                    int index = i;
+                    string nextTokenCharacter = "";
+
+                    // ignore spaces
+                    while (index < input.size() && isspace(input[index])) {
+                        index++;
+                    }
+
+                    // getting next token characters
+                    while (index < input.size() && !isspace(input[index])
+                            && input[index] != ';' && input[index] != ')') {
+                        nextTokenCharacter += input[index++];
+                    }
+
+                    if (nextTokenCharacter == "int" ||
+                        nextTokenCharacter == "char" ||
+                        nextTokenCharacter == "bool" ||
+                        nextTokenCharacter == "string" ||
+                        nextTokenCharacter == "void") {
+                        
+                        cerr << "Syntax error on line " << lineNumber
+                             << ": reserved word \"" << nextTokenCharacter
+                             << "\" cannot be used for the name of a "
+                             << "variable.\n";
+                        exit(0);
+                    }
+
+                    if (nextTokenCharacter == "printf") {
+                        cerr << "Syntax error on line " << lineNumber
+                             << ": reserved word \"printf\" cannot be used "
+                             << "for the name of a function.\n";
+                        exit(0);
+                    }
+                }
+
                 inputToken.type = IDENTIFIER;
             }
 
@@ -266,10 +308,10 @@ Tokenization::Tokenization(const string& input) {
 
 
             break;
->>>>>>> Stashed changes
         }
     }
 }
+    
 
 /**
  * @brief Output operator overload
@@ -288,6 +330,14 @@ ostream& operator << (ostream& os, const Tokenization& obj) {
         string tokenString = "Token: ";
 
         switch (token.type) {
+            case VOID:
+                tokenType += "VOID";
+                break;
+
+            case CHAR: 
+                tokenType += "CHAR";
+                break;
+
             case IDENTIFIER:
                 tokenType += "IDENTIFIER";
                 break;

@@ -22,6 +22,12 @@ auto toTokenCharacter(Token token) {
  */
 auto toTokenType(Token token) {
     switch (token.type) {
+        case CHAR:
+            return "CHAR";
+
+        case VOID:
+            return "VOID";
+
         case IDENTIFIER:
             return "IDENTIFIER";
 
@@ -119,15 +125,16 @@ auto toTokenType(Token token) {
 }
 
 /**
- * @brief Breadth-first search print function
+ * @brief Breadth-first search function
+ * @returns A string with the resulting BFS
  */
-void LCRS::printBFS() const {
+string LCRS::BFS() const {
     /**
      * @remark pair a LCRS node and its level in the tree 
      */
     queue<std::pair<const LCRS*, int>> q;
     q.push({this, 0});
-
+    string result = "";
     int currentLevel = -1;
 
     while (!q.empty()) {
@@ -137,12 +144,12 @@ void LCRS::printBFS() const {
 
         if (level != currentLevel) {
             if (currentLevel != -1) 
-                cout << '\n';
+                result += '\n';
             
             currentLevel = level;
         }
 
-        cout << toTokenCharacter(current->token) << ' ';
+        result += toTokenCharacter(current->token) + ' ';
 
         if (current->leftChild)
             q.push({current->leftChild, level + 1});
@@ -151,7 +158,7 @@ void LCRS::printBFS() const {
 
     }
 
-    cout << '\n';
+    return result += '\n';
 }
 
 /**
@@ -185,10 +192,10 @@ State getStateDFA(Token token) {
  * @param tokens - A vector of tokens from a C-style program 
  */
 RecursiveDescentParser::RecursiveDescentParser(const vector<Token>& tokens) {
-   /**
-    * used to keep track of left parenthesis in the cases of math/bool expression 
-    */
-   int leftParenCounter = 0;
+    /**
+     * used to keep track of left parenthesis in the cases of math/bool expression 
+     */
+    int leftParenCounter = 0;
 
     LCRS* lcrs = tokens.size() > 0 ? new LCRS(tokens[0]) : nullptr;
     LCRS* temp = lcrs;
@@ -277,10 +284,22 @@ RecursiveDescentParser::RecursiveDescentParser(const vector<Token>& tokens) {
                 }
                 break;
 
-
         }
     }
 
     concreteSyntaxTree = lcrs;
-    concreteSyntaxTree->printBFS();
+}
+
+/**
+ * @brief Output operator overload
+ * @param os - The output stream operator
+ * @param obj - The RecursiveDescentParser object to output
+ * @returns The modified output stream
+ * @remark Outputs CST according to project spec
+ * 
+ *      ex: cout << RecursiveDescentParserObj;
+ */
+ostream& operator << (ostream& os, const RecursiveDescentParser& obj) {
+    os << obj.concreteSyntaxTree->BFS();
+    return os;
 }

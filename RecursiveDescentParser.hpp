@@ -42,9 +42,10 @@ public:
     LCRS(const Token& token) : token(token), leftChild(nullptr), rightSibling(nullptr) { }
 
     /**
-     * @brief Breadth-first search print function
+     * @brief Breadth-first search function
+     * @returns A string with the resulting BFS
      */
-    void printBFS() const;
+    string BFS() const;
 
 private:
     /**
@@ -86,6 +87,17 @@ public:
      * @param tokens - A vector of tokens from a C-style program 
      */
     RecursiveDescentParser(const vector<Token>& tokens);
+
+    /**
+     * @brief Output operator overload
+     * @param os - The output stream operator
+     * @param obj - The RecursiveDescentParser object to output
+     * @returns The modified output stream
+     * @remark Outputs CST according to project spec
+     * 
+     *      ex: cout << RecursiveDescentParserObj;
+     */
+    friend ostream& operator << (ostream& os, const RecursiveDescentParser& obj);
 
 private:
     /**
