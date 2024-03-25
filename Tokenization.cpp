@@ -89,7 +89,7 @@ Tokenization::Tokenization(const string& input) {
                 inputToken.type = DOUBLE_QUOTE;
                 inputToken.character = "\"";
                 if(input[i+1]=='\n' || input[i-1] == '\\'){
-                    std::cerr << "Syntax at line " << lineNumber << ": unterminated string quote." << endl;
+                    std::cerr << "Syntax error on line " << lineNumber << ": unterminated string quote." << endl;
                     exit(EXIT_FAILURE);
                 }
                 tokens.push_back(inputToken);
@@ -258,6 +258,46 @@ Tokenization::Tokenization(const string& input) {
                 while (!isspace(input[i]) && !(find( listOfSymbols.begin(), 
                 listOfSymbols.end(), input[i]) != listOfSymbols.end())) {
                     inputToken.character += input[i++];
+                }
+
+                if (inputToken.character == "int" || 
+                    inputToken.character == "char" ||
+                    inputToken.character == "bool" ||
+                    inputToken.character == "string") {
+                    
+                    int index = i;
+                    string nextTokenCharacter = "";
+
+                    // ignore spaces
+                    while (index < input.size() && isspace(input[index])) {
+                        index++;
+                    }
+
+                    // getting next token characters
+                    while (index < input.size() && !isspace(input[index])
+                            && input[index] != ';' && input[index] != ')') {
+                        nextTokenCharacter += input[index++];
+                    }
+
+                    if (nextTokenCharacter == "int" ||
+                        nextTokenCharacter == "char" ||
+                        nextTokenCharacter == "bool" ||
+                        nextTokenCharacter == "string" ||
+                        nextTokenCharacter == "void") {
+                        
+                        cerr << "Syntax error on line " << lineNumber
+                             << ": reserved word \"" << nextTokenCharacter
+                             << "\" cannot be used for the name of a "
+                             << "variable.\n";
+                        exit(0);
+                    }
+
+                    if (nextTokenCharacter == "printf") {
+                        cerr << "Syntax error on line " << lineNumber
+                             << ": reserved word \"printf\" cannot be used "
+                             << "for the name of a function.\n";
+                        exit(0);
+                    }
                 }
 
                 inputToken.type = IDENTIFIER;

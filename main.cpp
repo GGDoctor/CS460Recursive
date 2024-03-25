@@ -34,6 +34,7 @@ int main(int argc, char *argv[]) {
 
     vector<Token> tokens = tokenization.getTokens();
     RecursiveDescentParser recursiveDescentParser(tokens);
+    cout << recursiveDescentParser;
 
     return 0;
 }
